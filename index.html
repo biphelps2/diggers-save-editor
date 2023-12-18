@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>Diggers Save Editor</title>
+
+    <style>
+
+        .all-file-based-content, .other-actions{
+            display: none;
+        }
+
+        a {
+            color: lightblue;
+        }
+
+        body {
+            max-width: calc(1280px);
+            margin: auto;
+            background: rgb(101, 24, 44);
+        }
+        img#diggers-map {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .tab-content {
+            background: rgb(101, 24, 44);
+            padding: 0;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .action-buttons {
+            margin: 20px;
+            margin-left: 0;
+
+        }
+
+        .action-buttons .other-actions {
+            margin-left: auto;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        #level-upload{
+            background: white;
+            margin-left: 0;
+            /*width: 520px;*/
+            /*width: 100%;*/
+            width:350px;
+            padding: 5px;
+
+            margin-right: 10px;
+        }
+
+        fieldset{
+            /*background: white;*/
+            /*max-width: 800px;*/
+
+
+            width: calc(100% - 20px);
+
+            border: 0;
+            margin: 0;
+            padding: 10px;
+        }
+        fieldset legend {
+            /*background: white;*/
+        }
+
+        #header {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        #levelcompletion {
+            width: unset;
+        }
+
+        .image-container {
+            position: relative;
+        }
+
+        img {
+            image-rendering: crisp-edges;
+        }
+
+        img.flag {
+            /*image-rendering: crisp-edges; !* Better support than pixelated *!*/
+            /*width: 27px;*/
+
+            position: absolute;
+            /*JS calculates the top and left positions.*/
+            /*top: calc(62px - 21px);*/
+            /*left: calc(214px - 10px);*/
+
+            display: none;
+
+            pointer-events: none;
+        }
+
+        fieldset#levelcompletion div {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: auto auto auto auto auto auto auto auto;
+            grid-auto-flow: column;
+        }
+
+        fieldset label {
+            display: block;
+        }
+
+        form{
+        }
+
+        #miners img {
+            height:80px;
+            image-rendering: crisp-edges;
+        }
+
+        #miners {
+            /*background: rgb(101, 101, 150);*/
+            padding-left: 20px;
+            padding-right: 20px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .miner > div {
+            /*background: white;*/
+        }
+
+        .miner input {
+            display: inline-block;
+        }
+
+        .miner img {
+            margin: auto;
+            display: block;
+        }
+
+        h2 {
+            margin-bottom: 0;
+        }
+
+        .tab button {
+            border: none;
+
+            background: white;
+            font-size:1.1em;
+            margin-right: 5px;
+
+            cursor: pointer;
+            margin-bottom: 10px;
+
+            position: relative;
+            top:15px;
+            z-index:0;
+
+        }
+
+        .left {
+            z-index: 1;
+        }
+
+        .tab button.selected {
+            background: rgb(223, 186, 146);
+            margin-bottom: -20px;
+
+
+            z-index:2;
+            top:20px;
+
+        }
+
+        input {
+            box-sizing:border-box;
+        }
+
+        #slotname {
+            width: 100%;
+        }
+
+        #fields-money label {
+            margin-bottom: 10px;
+        }
+        #fields-money label:last-child {
+            margin-bottom: 0;
+        }
+
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr auto;
+        }
+
+        .columns > .left,  #levelcompletion, #headerl, .footnotes, #header {
+
+            background: rgb(223, 186, 146);
+
+            border: 24px solid black;
+            border-image-source: none;
+            border-image: url('map-border.png');
+            border-image-slice: 8 8 8 8 fill;
+            image-rendering: crisp-edges;
+            background: none;
+            border-image-repeat: round;
+        }
+
+        .columns > .right {
+            background: rgb(101, 24, 44);
+            padding: 0;
+            margin-left: 20px;
+
+            position: relative;
+            top: -30px;
+        }
+
+        #levelcompletion {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        fieldset {
+
+            background: rgb(223, 186, 146);
+        }
+
+        button, .action-buttons input::file-selector-button {
+            font-size:1.2em;
+            padding:5px 10px;
+            display:inline-block;
+            font-weight: bold;
+        }
+
+        #heading-level-completion {
+            margin-top: 0;
+        }
+
+        label.miner img {
+            background: rgb(101, 101, 150);
+            padding:6px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header">
+
+        <h1>Diggers Level Editor</h1>
+
+        <p>Choose a DIGGERS.DTA file to modify:</p>
+
+        <div class="action-buttons">
+            <input type="file" id="level-upload" />
+            <div class="other-actions">
+                <button id="download-file">Download changes</button>
+                <button id="reset-form">Reset form</button>
+                <button class="new-file">New file</button>
+            </div>
+        </div>
+
+        <div id="newfilesection">
+            <p>Or start with a new file:</p>
+            <button class="new-file">New file</button>
+        </div>
+    </div>
+
+    <div class="all-file-based-content">
+        <div class="tab">
+            <button onclick="onTab(0);">Slot 1</button><button onclick="onTab(1);">Slot 2</button><button onclick="onTab(2);">Slot 3</button><button onclick="onTab(3);">Slot 4</button><button onclick="onTab(4);">Slot 5</button><button onclick="onTab(5);">Slot 6</button><button onclick="onTab(6);">Slot 7</button><button onclick="onTab(7);">Slot 8</button>
+        </div>
+
+        <div class="tab-content">
+            <form id="myform">
+
+                <div class="columns">
+                    <div class="left">
+                        <h2>Slot Name</h2>
+                        <label>
+                            <p>Save file name. Only capital letters, numbers, and spaces. Max. 27 characters.</p>
+                            <input id="slotname" type="text" maxlength="27" pattern="[a-zA-Z0-9 ]*" placeholder="no name" />
+                        </label>
+
+                        <h2>Miners</h2>
+                        <fieldset id="miners">
+                            <label class="miner">
+                                <img src="digger-0.png">
+                                <input type="radio" name="miners" value="0" checked />
+                                F'Targs
+                            </label>
+                            <label class="miner">
+                                <img src="digger-1.png">
+                                <input type="radio" name="miners" value="1" />
+                                Habbish
+                            </label>
+                            <label class="miner">
+                                <img src="digger-2.png">
+                                <input type="radio" name="miners" value="2" />
+                                Grablins
+                            </label>
+                            <label class="miner">
+                                <img src="digger-3.png">
+                                <input type="radio" name="miners" value="3" />
+                                Quarriors
+                            </label>
+                        </fieldset>
+
+                        <h2>Money</h2>
+                        <fieldset id="fields-money">
+                            <label style="display: block;">
+                                <div>Bank (progress to 17,500 goal)</div>
+                                <input id="capital" type="number" name="capital" value="" />
+                            </label>
+                            <label style="display: block;">
+                                <div>Capital carried (money available to spend in next level)</div>
+                                <input id="savings" type="number" name="savings" value="" />
+                            </label>
+                        </fieldset>
+
+                        <h2>Misc.</h2>
+                        <fieldset id="fields-misc">
+                            <label style="display: block;">
+                                <input id="istutorial" type="checkbox" name="istutorial" value="1" />
+                                "Tutorial" complete (i.e. at least one level has been completed). If this is left unchecked, only the first two levels can be accessed.
+                            </label>
+                        </fieldset>
+                    </div>
+                    <div class="right">
+                        <img id="digger-stats-img" width="672" src="digger-stats-0.png">
+                    </div>
+                </div>
+
+                <div>
+                    <fieldset id="levelcompletion">
+                        <h2 id="heading-level-completion">Level Completion</h2>
+                        <p>Choose which maps are marked as completed.</p>
+                        <div id="checkboxes">
+                            labels / form controls go here via javascript.
+                        </div>
+                    </fieldset>
+
+                    <div class="image-container">
+                        <!-- Image Map Generated by http://www.image-map.net/ -->
+                        <img id="diggers-map" src="diggers-map-original-size.png" usemap="#image-map">
+
+                    </div>
+
+                </div>
+            </form>
+        </div>
+
+
+        <div id="map-section">
+
+        </div>
+
+        <map id="map-template" name="initial-image-map">
+            <area target="" alt="1: Azerg" title="1: Azerg" data-idx="1" href="#" coords="265,40,243,32,211,28,175,29,185,61,187,76,205,81,225,91,235,90,261,100,266,67" shape="poly">
+            <area target="" alt="2: Dhobbs" title="2: Dhobbs" data-idx="2" href="#" coords="60,108,84,125,94,122,106,128,120,126,133,134,143,133,143,127,148,118,145,109,149,103,173,92,187,76,185,61,179,41,175,28,128,29,115,58,86,83,66,91" shape="poly">
+            <area target="" alt="3: Eleevate" title="3: Eleevate" data-idx="3" href="#" coords="87,190,85,181,92,170,95,158,103,148,105,129,95,123,83,126,60,109,52,131,35,146,32,180,53,181,59,186,74,182,75,189" shape="poly">
+            <area target="" alt="4: Deena" title="4: Deena" data-idx="4" href="#" coords="106,195,88,190,75,190,74,182,58,186,53,181,31,179,35,213,30,256,27,313,40,314,62,287,83,279,111,254,109,235,104,228,109,219,105,207,109,203" shape="poly">
+            <area target="" alt="5: Juhstyn" title="5: Juhstyn" data-idx="5" href="#" coords="149,186,144,133,134,134,121,127,105,128,103,148,96,159,92,171,85,181,86,189,106,196" shape="poly">
+            <area target="" alt="6: Fujale" title="6: Fujale" data-idx="6" href="#" coords="148,166,188,161,215,151,224,151,226,129,220,123,214,126,198,116,185,117,180,122,174,120,165,129,143,133" shape="poly">
+            <area target="" alt="7: Haewould" title="7: Haewould" data-idx="7" href="#" coords="226,127,236,123,238,115,248,113,249,106,258,106,260,101,235,91,224,92,206,82,187,75,174,92,150,103,145,110,148,119,143,127,143,133,165,129,173,121,180,123,184,117,199,117,213,127,220,124" shape="poly">
+            <area target="" alt="8: Sairruha" title="8: Sairruha" data-idx="8" href="#" coords="149,186,158,193,170,196,179,209,191,213,202,206,204,196,210,190,214,178,224,174,223,153,216,151,190,161,148,167" shape="poly">
+            <area target="" alt="9: Trarghe" title="9: Trarghe" data-idx="9" href="#" coords="191,213,180,210,171,196,158,193,149,186,106,197,109,203,105,208,109,218,103,228,110,236,110,255,130,269,134,286,157,299,176,288,169,255,183,246" shape="poly">
+            <area target="" alt="10: Kurvelynn" title="10: Kurvelynn" data-idx="10" href="#" coords="186,232,198,232,210,238,220,238,227,247,235,246,251,249,256,241,252,233,258,207,242,196,239,187,231,176,224,174,214,176,210,190,203,194,202,206,191,211" shape="poly">
+            <area target="" alt="11: Sqweek" title="11: Sqweek" data-idx="11" href="#" coords="240,188,248,188,252,175,268,173,273,167,268,157,272,136,249,130,228,128,223,153,223,175,232,178" shape="poly">
+            <area target="" alt="12: Mykeborl" title="12: Mykeborl" data-idx="12" href="#" coords="272,136,278,136,286,141,303,138,308,141,312,136,320,133,328,119,320,107,307,105,302,97,291,97,281,91,279,86,264,83,260,100,259,107,250,107,250,114,239,116,237,123,227,127,250,130" shape="poly">
+            <area target="" alt="13: Zorlyack" title="13: Zorlyack" data-idx="13" href="#" coords="329,119,335,113,340,105,352,101,354,95,345,84,342,76,330,68,323,48,297,49,286,60,267,66,263,83,279,86,281,92,289,96,303,97,308,105,320,107" shape="poly">
+            <area target="" alt="14: Ftargus" title="14: Ftargus" data-idx="14" href="#" coords="354,95,360,98,372,97,383,100,390,96,409,100,398,78,406,70,404,61,410,60,411,53,409,41,358,38,337,43,323,47,330,70,342,75,343,84" shape="poly">
+            <area target="" alt="15: Traisa" title="15: Traisa" data-idx="15" href="#" coords="373,97,376,113,374,120,380,126,383,135,379,147,379,159,359,165,340,160,336,155,327,155,322,145,309,142,311,136,320,134,328,120,335,114,340,105,353,101,354,95,359,98" shape="poly">
+            <area target="" alt="16: Klindyke" title="16: Klindyke" data-idx="16" href="#" coords="259,208,278,210,285,202,298,200,316,202,308,187,318,170,306,156,309,143,304,138,286,142,279,136,272,136,268,157,273,168,268,173,252,175,248,188,241,188,243,195,251,203" shape="poly">
+            <area target="" alt="17: Eeanzone" title="17: Eeanzone" data-idx="17" href="#" coords="254,250,271,250,282,247,286,241,300,241,313,237,326,237,333,232,324,220,318,203,300,200,286,200,278,210,259,207,252,235" shape="poly">
+            <area target="" alt="18: Chyeishia" title="18: Chyeishia" data-idx="18" href="#" coords="253,249,253,255,250,264,257,275,260,301,246,305,231,303,215,312,199,305,196,290,183,275,183,246,186,233,197,233,208,238,219,238,225,247,236,245" shape="poly">
+            <area target="" alt="19: Djenneee" title="19: Djenneee" data-idx="19" href="#" coords="260,301,274,311,309,300,327,300,325,273,320,261,327,252,334,233,326,237,313,237,299,242,287,240,282,247,272,249,255,250,250,264,257,275" shape="poly">
+            <area target="" alt="20: Dwindera" title="20: Dwindera" data-idx="20" href="#" coords="328,301,346,316,365,316,378,310,411,314,423,294,415,271,406,262,391,261,394,240,403,223,389,223,385,230,364,235,350,229,334,232,328,252,321,260,325,275" shape="poly">
+            <area target="" alt="21: Twang" title="21: Twang" data-idx="21" href="#" coords="335,232,349,228,364,234,365,227,354,218,361,200,357,189,359,166,340,161,338,155,327,155,323,146,309,142,306,155,320,170,309,186,318,202,324,221" shape="poly">
+            <area target="" alt="22: Habbard" title="22: Habbard" data-idx="22" href="#" coords="365,234,385,230,389,223,402,224,405,218,399,208,408,197,412,189,411,182,422,161,408,161,400,166,380,161,358,166,356,191,362,200,353,219,365,227" shape="poly">
+            <area target="" alt="23: Benjar" title="23: Benjar" data-idx="23" href="#" coords="422,159,423,150,420,134,440,123,446,112,455,112,465,102,443,95,433,99,427,99,420,104,409,98,391,95,384,100,373,97,377,113,374,120,380,125,384,134,379,148,379,159,400,167,407,160" shape="poly">
+            <area target="" alt="24: Shrubree" title="24: Shrubree" data-idx="24" href="#" coords="465,101,474,85,472,75,477,70,470,55,469,42,453,39,434,41,410,41,412,51,410,60,404,59,406,70,398,78,409,98,418,103,427,99,433,99,443,94" shape="poly">
+            <area target="" alt="25: Barok" title="25: Barok" data-idx="25" href="#" coords="466,102,488,96,503,99,511,94,531,105,565,110,585,94,585,73,571,65,555,46,540,44,522,32,506,32,488,40,469,43,469,52,478,70,472,74,475,85" shape="poly">
+            <area target="" alt="26: Muhlahrd" title="26: Muhlahrd" data-idx="26" href="#" coords="505,100,508,110,518,116,505,158,497,160,491,171,479,171,463,163,442,165,422,159,423,149,421,133,440,123,445,113,454,113,465,101,489,95,497,97" shape="poly">
+            <area target="" alt="27: Chonskee" title="27: Chonskee" data-idx="27" href="#" coords="491,172,488,178,479,183,473,197,460,212,427,208,417,215,405,216,399,208,408,198,413,190,412,181,423,159,440,166,463,161,478,170" shape="poly">
+            <area target="" alt="28: Purth" title="28: Purth" data-idx="28" href="#" coords="461,212,460,219,465,226,463,235,470,247,457,262,439,265,428,281,419,282,415,270,407,262,392,260,394,241,402,223,405,216,418,216,427,208" shape="poly">
+            <area target="" alt="29: Ankh" title="29: Ankh" data-idx="29" href="#" coords="470,247,476,247,484,254,500,251,518,254,514,301,495,317,480,317,463,302,441,308,429,296,428,281,438,265,458,261" shape="poly">
+            <area target="" alt="30: Zelios" title="30: Zelios" data-idx="30" href="#" coords="519,254,528,254,539,246,546,248,555,244,556,231,566,211,583,201,594,231,577,258,606,285,603,307,571,325,534,323,529,307,532,294,514,301" shape="poly">
+            <area target="" alt="31: Fruer" title="31: Fruer" data-idx="31" href="#" coords="583,202,583,191,563,195,553,201,545,212,538,214,528,207,505,211,498,203,488,203,479,184,475,195,461,212,460,219,465,225,463,234,468,247,476,247,484,253,500,250,517,254,528,254,539,246,545,248,554,244,555,232,566,209" shape="poly">
+            <area target="" alt="32: Klarsh" title="32: Klarsh" data-idx="32" href="#" coords="583,192,585,177,544,165,491,172,488,178,480,183,487,202,498,204,505,211,527,207,536,213,544,213,552,201,561,195" shape="poly">
+            <area target="" alt="33: Suhmner" title="33: Suhmner" data-idx="33" href="#" coords="585,177,595,159,597,133,582,108,573,105,565,110,530,104,512,94,504,98,509,111,518,115,505,158,498,159,490,172,545,165" shape="poly">
+            <area target="" alt="34: ?" title="34: ?" data-idx="34" href="#" coords="584,72,598,68,600,49,585,28,562,30,554,45,570,65" shape="poly">
+        </map>
+    </div>
+
+    <div class="footer">
+        <p>By splerp. <a href="https://www.github.com">Code on github can be found here.</a> Enjoy!</p>
+    </div>
+
+    <div class="footnotes" style="margin-bottom: calc(100vh - 50px);">
+        <h2>Notes</h2>
+        <p>This save file editor has been tested with version 1.94. Older versions are likely to work but haven't been tested.</p>
+        <p>I originally created this tool to allow completed maps to be played again (just untick a box and enable level replay!).</p>
+    </div>
+
+    <script>
+        let map = document.querySelector("#map-template");
+        let allOriginalAreas = map.querySelectorAll("area");
+        let checkboxArea = document.querySelector("#checkboxes");
+
+        let areaForModifiedMap = document.querySelector("#map-section");
+
+        let newMap = map.cloneNode(true);
+        newMap.setAttribute("name", "image-map");
+        let allAreas = newMap.querySelectorAll("area");
+        let image = document.querySelector("img#diggers-map")
+
+        let imageContainer = document.querySelector(".image-container");
+
+        let minerCheckboxes = document.querySelectorAll(".miner input");
+
+        let downloadButton = document.querySelector("#download-file");
+        downloadButton.onclick = onDownload;
+        let resetButton = document.querySelector("#reset-form");
+        resetButton.onclick = onResetChanges;
+
+        areaForModifiedMap.appendChild(newMap);
+
+        let originalImageWidth = 640;
+        let originalImageHeight = 350;
+
+        const lengthOfFile = 352;
+        const numSlots = 8;
+        const numBytesPerSlot = 44;
+
+        const lengthOfSaveName = 32; // 0
+        const lengthOfLevelCompletionBytes = 5; // 32
+        const raceSelectionOffset = 37; // 37
+        const capitalRaisedOffset = 38;
+        const availableMoneyOffset = 42;
+        const numLevels = 34;
+
+        let currentlySelectedSlot = 0; // 0-7.
+
+
+        var defaultFileBytes = Uint8Array.from(Array(lengthOfFile));
+        console.log("Default:", defaultFileBytes);
+
+        var allTabs = document.querySelectorAll(".tab button");
+        function onTab(n){
+            currentlySelectedSlot = n;
+
+            for(var i = 0; i < allTabs.length; i++){
+                allTabs[i].classList.remove("selected");
+            }
+
+            allTabs[n].classList.add("selected");
+
+            populateForm();
+        }
+
+        function populateForm(){
+            if(!isEditingFile){
+                console.log("Not editing a file yet.");
+                return;
+            }
+
+            console.log("Populating form. slot: " + currentlySelectedSlot);
+
+            var currentTab = currentlySelectedSlot;
+            var byteOffset = numBytesPerSlot * currentTab;
+            var bytesForTab = modifiedFileBytes.slice(byteOffset, byteOffset + numBytesPerSlot);
+
+            var titleBytes = bytesForTab.slice(0, lengthOfSaveName);
+            var title = "";
+            for(var i = 0; i < titleBytes.length; i++){
+                if(titleBytes[i] >= 48 && titleBytes[i] <= 90){
+                    title += String.fromCharCode(titleBytes[i]);
+                }
+                // Space test.
+                else if(titleBytes[i] === 32){
+                    title += String.fromCharCode(titleBytes[i]);
+                }
+                else{
+                    console.log("Non-alphanumeric character found, ending read here.");
+                    break;
+                }
+            }
+
+            var levelCompletionBytes = bytesForTab.slice(32, lengthOfSaveName + 5);
+
+            for(var i = 0; i < numLevels; i++){
+                var byteToUpdate = Math.floor(i / 8);
+                // 0 1 2 3 4 5 6
+                var bitToUpdate = i % 8;
+
+                allCheckboxes[i].checked = ((levelCompletionBytes[byteToUpdate] >> bitToUpdate) & 1) === 1;
+                allCheckboxes[i].dispatchEvent(new Event('change'));
+            }
+
+            console.log("title:", title, numLevels);
+            document.querySelector("#slotname").value = title;
+
+            console.log ("bytes for tab: ", bytesForTab, modifiedFileBytes);
+            var selectedRace = bytesForTab[raceSelectionOffset];
+            if(selectedRace < 0){
+                selectedRace = 0;
+            }
+            else if(selectedRace > 3){
+                selectedRace = 3;
+            }
+            console.log("Checkbox: " + selectedRace);
+            minerCheckboxes[selectedRace].checked = true;
+            SetMiner(selectedRace);
+
+            var capital = bytesForTab[capitalRaisedOffset] + (bytesForTab[capitalRaisedOffset + 1] << 8);
+            var savings = bytesForTab[availableMoneyOffset] + (bytesForTab[availableMoneyOffset + 1] << 8);
+
+            document.querySelector("#fields-money #capital").value = capital;
+            document.querySelector("#fields-money #savings").value = savings;
+        }
+
+        var minerStatsImage = document.querySelector("#digger-stats-img");
+
+        document.querySelector("#fields-money #capital").onchange = (e) => {
+            var value = parseInt(document.querySelector("#fields-money #capital").value);
+
+            if(value < 0){
+                value = 0;
+            }
+            if(value >= 2**16){
+                value = 2**16 - 1;
+            }
+            document.querySelector("#fields-money #capital").value = value;
+
+            var b1 = value & 0xff; // less significant
+            var b2 = (value >> 8) & 0xff; // more significant
+
+            var byteOffset = numBytesPerSlot * currentlySelectedSlot;
+
+            modifiedFileBytes[byteOffset + capitalRaisedOffset] = b1;
+            modifiedFileBytes[byteOffset + capitalRaisedOffset + 1] = b2;
+
+            console.log("Saving to offset " + byteOffset + ", values:", [b1, b2], e.target.value);
+        }
+
+        document.querySelector("#fields-money #savings").onchange = (e) => {
+            var value = parseInt(document.querySelector("#fields-money #savings").value);
+
+            if(value < 0){
+                value = 0;
+            }
+            if(value >= 2**16){
+                value = 2**16 - 1;
+            }
+            document.querySelector("#fields-money #savings").value = value;
+            var b1 = value & 0xff; // less significant
+            var b2 = (value >> 8) & 0xff; // more significant
+
+            var byteOffset = numBytesPerSlot * currentlySelectedSlot;
+
+            modifiedFileBytes[byteOffset + availableMoneyOffset] = b1;
+            modifiedFileBytes[byteOffset + availableMoneyOffset + 1] = b2;
+        }
+
+
+        var diggerStatImageUrls = [
+            "digger-stats-0.png",
+            "digger-stats-1.png",
+            "digger-stats-2.png",
+            "digger-stats-3.png"
+        ]
+
+        for(var i = 0; i < minerCheckboxes.length; i++){
+            (function (idx){
+                minerCheckboxes[idx].onchange = (e) =>{
+                    console.log("Picked checkbox " + idx);
+                    SetMiner(idx);
+                }
+            })(i);
+        }
+
+        function SetMiner(idx){
+
+            minerStatsImage.src = diggerStatImageUrls[idx];
+
+            var byteOffset = numBytesPerSlot * currentlySelectedSlot + raceSelectionOffset;
+            modifiedFileBytes[byteOffset] = idx;
+        }
+
+        var isEditingFile = false;
+        let originalFileBytes = [];
+        let modifiedFileBytes = [];
+
+        function onResetChanges(e){
+            if(isEditingFile){
+                modifiedFileBytes = Uint8Array.from(originalFileBytes);
+
+                onTab(0);
+            }
+        }
+
+        function onDownload(e){
+            if(isEditingFile){
+                // https://stackoverflow.com/a/48769059
+                console.log("Attempting to download.");
+
+                // Gather values from form and update modifiedFileBytes.
+
+                // change resultByte to bytes
+                var blob=new Blob([modifiedFileBytes], {type: "application/octet-stream"});
+
+                var link=document.createElement('a');
+                link.href=window.URL.createObjectURL(blob);
+                link.download="DIGGERS.DTA";
+                link.click();
+            }
+        }
+
+        let slotNameInput = document.querySelector("#slotname");
+        slotNameInput.onchange = (e) =>{
+            var name = slotNameInput.value;
+            var fixed = name.replace(/[^a-zA-Z0-9 ]/g, "").toUpperCase();
+            slotNameInput.value = fixed;
+
+            var offsetToUpdate = currentlySelectedSlot * numBytesPerSlot;
+
+            console.log("Setting: " + name);
+            // Reset to empty.
+            for(var i = 0; i < lengthOfSaveName; i++){
+                modifiedFileBytes[offsetToUpdate + i] = '\0';
+                console.log("Resetting byte " + (offsetToUpdate + i));
+            }
+            // We do - 1 because we always need an end-of-string marker.
+            for(var i =0; i < lengthOfSaveName - 1 && i < fixed.length; i++){
+                modifiedFileBytes[offsetToUpdate + i] = fixed.charCodeAt(i);
+                console.log("Setting byte " + (offsetToUpdate + i) + " to" + fixed.charCodeAt(i));
+            }
+
+        };
+
+        let fileUploadInput = document.querySelector("#level-upload");
+        fileUploadInput.oninput = onUpload;
+
+        var newFileInputs = document.querySelectorAll(".new-file");
+        for(var i = 0; i < newFileInputs.length; i++){
+            newFileInputs[i].onclick = onNew;
+        }
+
+        function onUpload(e) {
+
+            if(e.target.files.length > 0){
+                // https://stackoverflow.com/a/32556944
+                var reader = new FileReader();
+                reader.onload = function () {
+
+                    var arrayBuffer = reader.result;
+
+                    if(arrayBuffer.byteLength !== lengthOfFile){
+                        window.alert("Invalid file: Expected exactly " + lengthOfFile +  " bytes, got " + arrayBuffer.byteLength);
+                    }
+                    else{
+
+                        originalFileBytes = new Uint8Array(arrayBuffer);
+                        modifiedFileBytes = Uint8Array.from(originalFileBytes);
+
+                        console.log("loaded file. size: " + originalFileBytes.length);
+
+                        isEditingFile = true;
+
+                        document.querySelector(".all-file-based-content").style.display = "block";
+                        document.querySelector(".other-actions").style.display = "inline-block";
+                        document.querySelector("#newfilesection").style.display = "none";
+
+                        onTab(0);
+                    }
+                }
+                reader.readAsArrayBuffer(e.target.files[0]);
+            }
+        }
+
+        function onNew(e){
+            originalFileBytes = Uint8Array.from(defaultFileBytes);
+            modifiedFileBytes = Uint8Array.from(originalFileBytes);
+            isEditingFile = true;
+
+            document.querySelector(".all-file-based-content").style.display = "block";
+            document.querySelector(".other-actions").style.display = "inline-block";
+            document.querySelector("#newfilesection").style.display = "none";
+
+            onTab(0);
+        }
+
+        // Get initial file.
+        fileUploadInput.dispatchEvent(new Event('input'));
+
+        let flagOffsets = [
+            214, 62, 131, 92, 65, 167, 64, 223, 113, 169, 177, 145, 194, 106, 184, 183,
+            131, 219, 223, 222, 243, 154, 267, 122, 308, 86, 364, 76, 343, 140, 278, 191,
+            279, 231, 217, 262, 282, 265, 354, 269, 329, 193, 381, 181, 399, 122, 438, 81,
+            508, 74, 456, 140, 437, 187, 425, 243, 464, 278, 533, 272, 501, 236, 520, 194,
+            542, 145, 573, 58
+        ]
+
+        checkboxArea.innerHTML = "";
+        for(var i = 0; i < allAreas.length; i++){
+
+            let relevantArea = allAreas[i];
+            let areaAlt = relevantArea.getAttribute("alt");
+            let areaUrl = relevantArea.getAttribute("data-idx"); // todo change to data-idx.
+
+            checkboxArea.innerHTML += "<label><input type=\"checkbox\" name=\"levelcomplete\" value=\"" + areaUrl + "\" />" + areaAlt + "</label>";
+        }
+
+        allAreas.forEach(a => {
+            a.onclick = (e) =>{
+                e.preventDefault();
+
+                var relevantIdx = parseInt(a.getAttribute("data-idx") - 1);
+
+                var relevantCheckbox = allCheckboxes[relevantIdx];
+                relevantCheckbox.checked = !relevantCheckbox.checked;
+
+                relevantCheckbox.dispatchEvent(new Event('change'));
+            }
+        })
+
+        for(var i = 0; i < flagOffsets.length; i += 2){
+            var theLeft = flagOffsets[i] - 10;
+            var theTop = flagOffsets[i + 1] - 21;
+            imageContainer.innerHTML += "<img class=\"flag\" src=\"flag.png\" style=\"left: " + theLeft + "px; top: " + theTop + "px;\">";
+        }
+        var flags = imageContainer.querySelectorAll(".flag");
+
+        function onResize(wwidth){
+
+            let finalMapScale = wwidth / originalImageWidth;
+            console.log("Resize detected. Scaling to: " + finalMapScale);
+
+            for(var i = 0; i < allAreas.length; i++){
+                var originalArea = allOriginalAreas[i];
+                var newArea = allAreas[i];
+
+                let coordsStr = originalArea.getAttribute("coords");
+                let coordsList = coordsStr.split(",");
+
+                for(var j = 0; j < coordsList.length; j++){
+                    coordsList[j] *= finalMapScale;
+                }
+
+                // Now update.
+                newArea.setAttribute("coords", coordsList.join(","));
+            }
+
+            // And flags need to be scaled too.
+            for(var i = 0; i < flagOffsets.length; i += 2){
+                var flag = flags[i / 2];
+
+                let flagWidth = 21;
+                let flagHeight = 22;
+
+                // 10 and 21 is the origin on the flag image.
+                var leftOffset = (flagOffsets[i] - 10) * finalMapScale;
+                var topOffset = (flagOffsets[i + 1] - 21) * finalMapScale;
+                var width = flagWidth * finalMapScale;
+                var height = flagHeight * finalMapScale;
+
+                flag.style.left = leftOffset + "px";
+                flag.style.top = topOffset + "px";
+                flag.style.width = width + "px";
+                flag.style.height = height + "px";
+            }
+        }
+
+        const resizeObserver =new ResizeObserver((e) => {
+
+            if(e[0].contentRect.width === 0){
+                console.log("0 for some reason.", e);
+                return;
+            }
+
+            // Note from MDN about coords:
+            // The values are numbers of CSS pixels.
+            // So we can probably set to floats, but whole numbers makes more sense.
+            onResize(e[0].contentRect.width);
+        });
+
+        resizeObserver.observe(imageContainer);
+
+        var allCheckboxes = checkboxArea.querySelectorAll("input");
+
+        for(var j = 0; j < allCheckboxes.length; j++){
+            let closureJ = j;
+            allCheckboxes[j].onchange = (e) => {
+                var newValue = e.target.checked;
+                flags[closureJ].style.display = newValue ? "block" : "none";
+            }
+        }
+
+    </script>
+</body>
+</html>
