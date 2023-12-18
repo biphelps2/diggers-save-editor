@@ -27,7 +27,7 @@
 
     <div class="all-file-based-content">
         <div class="tab">
-            <button onclick="onTab(0);">Slot 1</button><button onclick="onTab(1);">Slot 2</button><button onclick="onTab(2);">Slot 3</button><button onclick="onTab(3);">Slot 4</button><button onclick="onTab(4);">Slot 5</button><button onclick="onTab(5);">Slot 6</button><button onclick="onTab(6);">Slot 7</button><button onclick="onTab(7);">Slot 8</button>
+            <button onclick="onChangeTab(0);">Slot 1</button><button onclick="onChangeTab(1);">Slot 2</button><button onclick="onChangeTab(2);">Slot 3</button><button onclick="onChangeTab(3);">Slot 4</button><button onclick="onChangeTab(4);">Slot 5</button><button onclick="onChangeTab(5);">Slot 6</button><button onclick="onChangeTab(6);">Slot 7</button><button onclick="onChangeTab(7);">Slot 8</button>
         </div>
 
         <div class="tab-content">
@@ -68,7 +68,7 @@
                         <h2>Money</h2>
                         <fieldset id="fields-money">
                             <label style="display: block;">
-                                Bank (progress to 17,500 goal)<br>
+                                Money in bank (progress to 17,500 goal)<br>
                                 <input id="capital" type="number" name="capital" value="" />
                             </label>
                             <label style="display: block;">
@@ -156,7 +156,8 @@
     <div class="footnotes" style="margin-bottom: calc(100vh - 50px);">
         <h2>Notes</h2>
         <p>This save file editor has been tested with version 1.94. Older versions are likely to work but haven't been tested.</p>
-        <p>I originally created this tool to allow completed maps to be played again (just untick a box and enable level replay!).</p>
+        <p>I originally created this tool to allow completed maps to be played again (just untick a box and enable level replay!). Since the
+        file format stores minimal data I thought it was worth just surfacing everything for completion's sake.</p>
     </div>
 
 <script src="diggers.js"></script>

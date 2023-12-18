@@ -1,21 +1,120 @@
 
-.all-file-based-content, .other-actions{
-    display: none;
+/* Elements */
+
+body {
+    max-width: 1280px;
+    margin: auto;
+    background: rgb(101, 24, 44);
+}
+
+h1 {
+    font-size: 2.5em;
+    margin: 0;
+}
+
+h2 {
+    margin-bottom: 0;
 }
 
 a {
     color: lightblue;
 }
 
-body {
-    max-width: calc(1280px);
-    margin: auto;
-    background: rgb(101, 24, 44);
+img {
+    image-rendering: crisp-edges;
 }
-img#diggers-map {
+
+input, fieldset {
+    box-sizing: border-box;
+}
+
+fieldset {
+    width: 100%;
+
+    border: 0;
+    margin: 0;
+    padding: 10px;
+}
+
+/* Button styling, including for file upload embedded button. */
+button, input::file-selector-button {
+    font-size: 1.2em;
+    padding: 5px 10px;
+    display: inline-block;
+    font-weight: bold;
+}
+
+/* IDs */
+
+#level-upload {
+    background: white;
+    margin-left: 0;
+    width: 350px;
+    padding: 5px;
+
+    margin-right: 10px;
+}
+
+#header {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#levelcompletion {
+    width: unset;
+}
+
+#levelcompletion > div {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: auto auto auto auto auto auto auto auto;
+    grid-auto-flow: column;
+}
+
+#miners {
+    padding-left: 20px;
+    padding-right: 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+}
+
+#miners img {
+    height: 80px;
+}
+
+#slotname {
+    width: 100%;
+}
+
+#fields-money label {
+    margin-bottom: 10px;
+}
+
+#fields-money label:last-child {
+    margin-bottom: 0;
+}
+
+#levelcompletion {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#heading-level-completion {
+    margin-top: 0;
+}
+
+#diggers-map {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+
+/* Classes */
+
+.all-file-based-content, .other-actions {
+    display: none;
 }
 
 .tab-content {
@@ -32,105 +131,22 @@ img#diggers-map {
 .action-buttons {
     margin: 20px;
     margin-left: 0;
-
 }
 
 .action-buttons .other-actions {
     margin-left: auto;
 }
 
-h1 {
-    font-size: 2.5em;
-    margin: 0;
-}
-
-#level-upload{
-    background: white;
-    margin-left: 0;
-    /*width: 520px;*/
-    /*width: 100%;*/
-    width:350px;
-    padding: 5px;
-
-    margin-right: 10px;
-}
-
-fieldset{
-    /*background: white;*/
-    /*max-width: 800px;*/
-
-
-    width: calc(100% - 20px);
-
-    border: 0;
-    margin: 0;
-    padding: 10px;
-}
-fieldset legend {
-    /*background: white;*/
-}
-
-#header {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-
-#levelcompletion {
-    width: unset;
-}
-
 .image-container {
     position: relative;
 }
 
-img {
-    image-rendering: crisp-edges;
-}
-
-img.flag {
-    /*image-rendering: crisp-edges; !* Better support than pixelated *!*/
-    /*width: 27px;*/
-
+.flag {
+    /* JavaScript will set the top and left properties. */
     position: absolute;
-    /*JS calculates the top and left positions.*/
-    /*top: calc(62px - 21px);*/
-    /*left: calc(214px - 10px);*/
 
     display: none;
-
     pointer-events: none;
-}
-
-fieldset#levelcompletion div {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: auto auto auto auto auto auto auto auto;
-    grid-auto-flow: column;
-}
-
-fieldset label {
-    display: block;
-}
-
-form{
-}
-
-#miners img {
-    height:80px;
-    image-rendering: crisp-edges;
-}
-
-#miners {
-    /*background: rgb(101, 101, 150);*/
-    padding-left: 20px;
-    padding-right: 20px;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: space-between;
-}
-
-.miner > div {
-    /*background: white;*/
 }
 
 .miner input {
@@ -140,54 +156,31 @@ form{
 .miner img {
     margin: auto;
     display: block;
-}
-
-h2 {
-    margin-bottom: 0;
+    background: rgb(101, 101, 150);
+    padding: 6px;
 }
 
 .tab button {
     border: none;
 
     background: white;
-    font-size:1.1em;
+    font-size: 1.1em;
     margin-right: 5px;
 
     cursor: pointer;
     margin-bottom: 10px;
 
     position: relative;
-    top:15px;
-    z-index:0;
-
+    top: 15px;
+    z-index: 0;
 }
 
-.left {
-    z-index: 1;
-}
-
-/*noinspection CssUnusedSymbol*/
 .tab button.selected {
     background: rgb(223, 186, 146);
     margin-bottom: -20px;
 
-    z-index:2;
-    top:20px;
-}
-
-input {
-    box-sizing:border-box;
-}
-
-#slotname {
-    width: 100%;
-}
-
-#fields-money label {
-    margin-bottom: 10px;
-}
-#fields-money label:last-child {
-    margin-bottom: 0;
+    z-index: 2;
+    top: 22px;
 }
 
 .columns {
@@ -195,20 +188,12 @@ input {
     grid-template-columns: 1fr auto;
 }
 
-.columns > .left,  #levelcompletion, .footnotes, #header {
-
-    background: rgb(223, 186, 146);
-
-    border: 24px solid black;
-    border-image-source: none;
-    border-image: url('map-border.png');
-    border-image-slice: 8 8 8 8 fill;
-    image-rendering: crisp-edges;
-    background: none;
-    border-image-repeat: round;
+/* Appear in front of tabs. */
+.columns .left {
+    z-index: 1;
 }
 
-.columns > .right {
+.columns .right {
     background: rgb(101, 24, 44);
     padding: 0;
     margin-left: 20px;
@@ -217,32 +202,15 @@ input {
     top: -30px;
 }
 
-.right img {
+.columns .right img {
     width: 672px;
 }
 
-#levelcompletion {
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-
-fieldset {
-
-    background: rgb(223, 186, 146);
-}
-
-button, .action-buttons input::file-selector-button {
-    font-size:1.2em;
-    padding:5px 10px;
-    display:inline-block;
-    font-weight: bold;
-}
-
-#heading-level-completion {
-    margin-top: 0;
-}
-
-label.miner img {
-    background: rgb(101, 101, 150);
-    padding:6px;
+/* Elements with a parchment-like border and colouring. */
+#header, .columns .left, #levelcompletion, .footnotes  {
+    border: 24px solid black;
+    border-image: url('map-border.png');
+    border-image-slice: 8 8 8 8 fill;
+    border-image-repeat: round;
+    image-rendering: crisp-edges;
 }
