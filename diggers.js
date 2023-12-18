@@ -1,32 +1,4 @@
 "use strict";
-// References to parts of the page.
-const map = document.querySelector("#map-template");
-const allOriginalAreas = map.querySelectorAll("area");
-const checkboxArea = document.querySelector("#checkboxes");
-
-const areaForModifiedMap = document.querySelector("#map-section");
-
-// Create clone of map areas, so we can modify absolute positions when image scales.
-const newMap = map.cloneNode(true);
-newMap.setAttribute("name", "image-map");
-areaForModifiedMap.appendChild(newMap);
-
-const allAreas = newMap.querySelectorAll("area");
-const imageContainer = document.querySelector(".image-container");
-const minerCheckboxes = document.querySelectorAll(".miner input");
-const downloadButton = document.querySelector("#download-file");
-const resetButton = document.querySelector("#reset-form");
-const minerStatsImage = document.querySelector("#digger-stats-img");
-const allTabs = document.querySelectorAll(".tab button");
-const fieldCapital = document.querySelector("#fields-money #capital");
-const fieldSavings = document.querySelector("#fields-money #savings");
-const fileUploadInput = document.querySelector("#level-upload");
-const newFileInputs = document.querySelectorAll(".new-file");
-const slotNameInput = document.querySelector("#slotname");
-
-// Set event listeners.
-downloadButton.onclick = onDownload;
-resetButton.onclick = onResetChanges;
 
 // Constants.
 const originalImageWidth = 640;
@@ -59,19 +31,96 @@ const flagOffsets = [
     542, 145, 573, 58
 ]
 
+// References to parts of the page.
+const map = document.querySelector("#map-template");
+const allOriginalAreas = map.querySelectorAll("area");
+const checkboxArea = document.querySelector("#checkboxes");
+
+const areaForModifiedMap = document.querySelector("#map-section");
+
+// Create clone of map areas, so we can modify absolute positions when image scales.
+const newMap = map.cloneNode(true);
+newMap.setAttribute("name", "image-map");
+areaForModifiedMap.appendChild(newMap);
+
+const allAreas = newMap.querySelectorAll("area");
+const imageContainer = document.querySelector(".image-container");
+const minerCheckboxes = document.querySelectorAll(".miner input");
+const downloadButton = document.querySelector("#download-file");
+const resetButton = document.querySelector("#reset-form");
+const minerStatsImage = document.querySelector("#digger-stats-img");
+const allTabs = document.querySelectorAll(".tab button");
+const fieldCapital = document.querySelector("#fields-money #capital");
+const fieldSavings = document.querySelector("#fields-money #savings");
+const fileUploadInput = document.querySelector("#level-upload");
+const newFileInputs = document.querySelectorAll(".new-file");
+const slotNameInput = document.querySelector("#slotname");
+
+// Generate all flag images, absolutely positioned.
+for(let i = 0; i < flagOffsets.length; i += 2){
+    const theLeft = flagOffsets[i] - 10;
+    const theTop = flagOffsets[i + 1] - 21;
+    imageContainer.innerHTML += "<img alt=\"\" class=\"flag\" src=\"flag.png\" style=\"left: " + theLeft + "px; top: " + theTop + "px;\">";
+}
+const flags = imageContainer.querySelectorAll(".flag");
+
+// Generate all checkboxes.
+checkboxArea.innerHTML = "";
+for(let i = 0; i < allAreas.length; i++){
+
+    const relevantArea = allAreas[i];
+    const areaAlt = relevantArea.getAttribute("alt");
+    const areaUrl = relevantArea.getAttribute("data-idx"); // todo change to data-idx.
+
+    checkboxArea.innerHTML += "<label><input type=\"checkbox\" name=\"levelcomplete\" value=\"" + areaUrl + "\" />" + areaAlt + "</label>";
+}
+const allCheckboxes = checkboxArea.querySelectorAll("input");
+
 // Variables.
 let currentlySelectedSlot = 0; // 0-7.
 let isEditingFile = false;
 let originalFileBytes = [];
 let modifiedFileBytes = [];
 
+// Event listerns.
+downloadButton.addEventListener('click', onDownload);
+resetButton.addEventListener('click', onResetChanges);
+fieldCapital.addEventListener('change', onCapitalChanged);
+fieldSavings.addEventListener('change', onSavingsChanged);
+
+// Set up onChange handlers for all miner checkboxes.
+for(let i = 0; i < minerCheckboxes.length; i++){
+    minerCheckboxes[i].addEventListener('change', (function() { SetMiner(i) }) );
+}
+
+fileUploadInput.addEventListener('input', onUpload);
+for(let i = 0; i < newFileInputs.length; i++){
+    newFileInputs[i].addEventListener('click', onNew);
+}
+
+slotNameInput.addEventListener('change', onSlotNameChange);
+
+for(let i = 0; i < allTabs.length; i++){
+    allTabs[i].addEventListener('click', (function () { onChangeTab(i); }));
+}
+
+allAreas.forEach(a => {
+    a.addEventListener('click', onSelectMapArea);
+})
+
+for(let j = 0; j < allCheckboxes.length; j++){
+    allCheckboxes[j].addEventListener('change', (function(e) { onLevelCompletionCheckboxChanged(e, j); }));
+}
+
+// Functions.
 function onChangeTab(n){
+    // Update currently selected slot reference.
     currentlySelectedSlot = n;
 
+    // Update selected class.
     for(let i = 0; i < allTabs.length; i++){
         allTabs[i].classList.remove("selected");
     }
-
     allTabs[n].classList.add("selected");
 
     // Popualte form.
@@ -128,21 +177,10 @@ function onChangeTab(n){
     }
 }
 
-fieldCapital.onchange = onCapitalChanged;
-fieldSavings.onchange = onSavingsChanged;
-
-// Set up onChange handlers for all miner checkboxes.
-for(let i = 0; i < minerCheckboxes.length; i++){
-    (function (idx){
-        minerCheckboxes[idx].onchange = (_) =>{
-            SetMiner(idx);
-        }
-    })(i);
-}
-
-fileUploadInput.oninput = onUpload;
-for(let i = 0; i < newFileInputs.length; i++){
-    newFileInputs[i].onclick = onNew;
+function onLevelCompletionCheckboxChanged(e, idx){
+    // Update the corresponding flag image.
+    const newValue = e.target.checked;
+    flags[idx].style.display = newValue ? "block" : "none";
 }
 
 function onCapitalChanged(_) {
@@ -214,7 +252,7 @@ function onDownload(_){
     }
 }
 
-slotNameInput.onchange = (_) =>{
+function onSlotNameChange(_) {
     const name = slotNameInput.value;
     const fixed = name.replace(/[^a-zA-Z0-9 ]/g, "").toUpperCase();
     slotNameInput.value = fixed;
@@ -223,17 +261,16 @@ slotNameInput.onchange = (_) =>{
 
     console.log("Setting: " + name);
     // Reset to empty.
-    for(let i = 0; i < lengthOfSaveName; i++){
+    for (let i = 0; i < lengthOfSaveName; i++) {
         modifiedFileBytes[offsetToUpdate + i] = '\0';
         console.log("Resetting byte " + (offsetToUpdate + i));
     }
     // We do - 1 because we always need an end-of-string marker.
-    for(let i = 0; i < lengthOfSaveName - 1 && i < fixed.length; i++){
+    for (let i = 0; i < lengthOfSaveName - 1 && i < fixed.length; i++) {
         modifiedFileBytes[offsetToUpdate + i] = fixed.charCodeAt(i);
         console.log("Setting byte " + (offsetToUpdate + i) + " to" + fixed.charCodeAt(i));
     }
-
-};
+}
 
 function onUpload(e) {
 
@@ -278,42 +315,24 @@ function onNew(_){
     onChangeTab(0);
 }
 
-// Get initial file.
-fileUploadInput.dispatchEvent(new Event('input'));
+function onSelectMapArea(e){
+    e.preventDefault();
 
-checkboxArea.innerHTML = "";
-for(let i = 0; i < allAreas.length; i++){
+    const relevantIdx = parseInt(e.target.getAttribute("data-idx") - 1);
+    const relevantCheckbox = allCheckboxes[relevantIdx];
+    relevantCheckbox.checked = !relevantCheckbox.checked;
 
-    const relevantArea = allAreas[i];
-    const areaAlt = relevantArea.getAttribute("alt");
-    const areaUrl = relevantArea.getAttribute("data-idx"); // todo change to data-idx.
-
-    checkboxArea.innerHTML += "<label><input type=\"checkbox\" name=\"levelcomplete\" value=\"" + areaUrl + "\" />" + areaAlt + "</label>";
+    relevantCheckbox.dispatchEvent(new Event('change'));
 }
-const allCheckboxes = checkboxArea.querySelectorAll("input");
 
-allAreas.forEach(a => {
-    a.onclick = (e) =>{
-        e.preventDefault();
-
-        const relevantIdx = parseInt(a.getAttribute("data-idx") - 1);
-        const relevantCheckbox = allCheckboxes[relevantIdx];
-        relevantCheckbox.checked = !relevantCheckbox.checked;
-
-        relevantCheckbox.dispatchEvent(new Event('change'));
+const resizeObserver = new ResizeObserver((e) => {
+    if(e[0].contentRect.width === 0){
+        console.log("Resize observed width change to 0, for some reason - ignoring.", e);
+        return;
     }
-})
 
-for(let i = 0; i < flagOffsets.length; i += 2){
-    const theLeft = flagOffsets[i] - 10;
-    const theTop = flagOffsets[i + 1] - 21;
-    imageContainer.innerHTML += "<img alt=\"\" class=\"flag\" src=\"flag.png\" style=\"left: " + theLeft + "px; top: " + theTop + "px;\">";
-}
-const flags = imageContainer.querySelectorAll(".flag");
-
-function onResize(wwidth){
-
-    const finalMapScale = wwidth / originalImageWidth;
+    // Note from MDN about coords: the values are numbers of CSS pixels.
+    const finalMapScale = e[0].contentRect.width / originalImageWidth;
     console.log("Resize detected. Scaling to: " + finalMapScale);
 
     for(let i = 0; i < allAreas.length; i++){
@@ -349,26 +368,9 @@ function onResize(wwidth){
         flag.style.width = width + "px";
         flag.style.height = height + "px";
     }
-}
-
-const resizeObserver =new ResizeObserver((e) => {
-
-    if(e[0].contentRect.width === 0){
-        console.log("0 for some reason.", e);
-        return;
-    }
-
-    // Note from MDN about coords:
-    // The values are numbers of CSS pixels.
-    // So we can probably set to floats, but whole numbers makes more sense.
-    onResize(e[0].contentRect.width);
 });
 
 resizeObserver.observe(imageContainer);
 
-for(let j = 0; j < allCheckboxes.length; j++){
-    allCheckboxes[j].onchange = (e) => {
-        const newValue = e.target.checked;
-        flags[j].style.display = newValue ? "block" : "none";
-    }
-}
+// Get initial file (browser may have preserved this field value).
+fileUploadInput.dispatchEvent(new Event('input'));
