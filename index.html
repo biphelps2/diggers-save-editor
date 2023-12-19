@@ -150,14 +150,53 @@
     </div>
 
     <div class="footer">
-        <p>By splerp. <a href="https://www.github.com">Code on github can be found here.</a> Enjoy!</p>
     </div>
 
-    <div class="footnotes" style="margin-bottom: calc(100vh - 50px);">
+    <hr>
+
+    <div class="footnotes" style="margin:auto; margin-bottom: calc(100vh - 50px); max-width: 800px;">
         <h2>Notes</h2>
-        <p>This save file editor has been tested with version 1.94. Older versions are likely to work but haven't been tested.</p>
-        <p>I originally created this tool to allow completed maps to be played again (just untick a box and enable level replay!). Since the
-        file format stores minimal data I thought it was worth just surfacing everything for completion's sake.</p>
+        <p>
+            This save file editor has been tested with version 1.94. Older versions are likely to
+            work but haven't been tested.
+        </p>
+        <p>
+            I originally created this tool to allow completed maps to be played again (just untick a box and
+            enable level replay!). Since the file format stores minimal data I thought it was worth just
+            surfacing everything for completion's sake.
+        </p>
+
+        <img style="width: 100%; image-rendering: optimizeQuality;" src="diggers-format-diagram.png" alt="">
+
+        <p>
+            The file size is fixed to 352 bytes exactly (since there are 8 save slots and no variable-length data).
+            All 352 bytes set to 0 would be considered a valid empty save file.
+        </p>
+
+        <p>
+            Setting the "race selection" byte to values higher than 0x03 causes overflow behaviour - players will
+            start with reduced health, interface UI sprites will be misaligned and players will sometimes cycle
+            through all sprites in the game (not just their own).
+        </p>
+
+        <p>
+            The goal of the game is to raise 17,500 money, so "money in bank" and "captial carried" should be
+            set to values lower than this. Since they're stored as 16-bit unsigned ints, the maximum is
+            actually 65535. Setting values too close to this maximum will cause overflows in the game's
+            calculations. Calculations seem to be done on 32-bit signed ints - a level's target money goal is set to
+            current money + *specific level target*, and if current money is too high then this will overflow to
+            a negative value, ending the level instantly. Then since the player has negative money, their total
+            money in the bank actually reduces (since we're doing current money + (negative money)).
+        </p>
+
+        <p>
+            I think this file format is a great example of just how little needs to be made persistent to make
+            a save game feel "complete".
+        </p>
+
+        <p>
+            By splerp. <a href="https://www.github.com">Source code can be found on GitHub here.</a> Enjoy!
+        </p>
     </div>
 
 <script src="diggers.js"></script>
