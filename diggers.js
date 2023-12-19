@@ -9,6 +9,7 @@ const numBytesPerSlot = 44;
 
 const lengthOfSaveName = 32;
 const levelCompletionOffset = 32;
+const levelCompletionTutorialByteOffset = 36;
 const raceSelectionOffset = 37;
 const capitalRaisedOffset = 38;
 const availableMoneyOffset = 42;
@@ -52,6 +53,7 @@ const minerStatsImage = document.querySelector("#digger-stats-img");
 const allTabs = document.querySelectorAll(".tab button");
 const fieldCapital = document.querySelector("#fields-money #capital");
 const fieldSavings = document.querySelector("#fields-money #savings");
+const fieldIsTutorial = document.querySelector("#istutorial");
 const fileUploadInput = document.querySelector("#level-upload");
 const newFileInputs = document.querySelectorAll(".new-file");
 const slotNameInput = document.querySelector("#slotname");
@@ -87,6 +89,7 @@ downloadButton.addEventListener('click', onDownload);
 resetButton.addEventListener('click', onResetChanges);
 fieldCapital.addEventListener('change', onCapitalChanged);
 fieldSavings.addEventListener('change', onSavingsChanged);
+fieldIsTutorial.addEventListener('change', onIsTutorialChanged)
 
 // Set up onChange handlers for all miner checkboxes.
 for(let i = 0; i < minerCheckboxes.length; i++){
@@ -171,9 +174,11 @@ function onChangeTab(n){
 
         const capital = bytesForTab[capitalRaisedOffset] + (bytesForTab[capitalRaisedOffset + 1] << 8);
         const savings = bytesForTab[availableMoneyOffset] + (bytesForTab[availableMoneyOffset + 1] << 8);
+        const isTutorial = ((bytesForTab[levelCompletionTutorialByteOffset] >> 2) & 1) === 1;
 
         fieldCapital.value = capital;
         fieldSavings.value = savings;
+        fieldIsTutorial.checked = isTutorial;
     }
 }
 
@@ -181,6 +186,15 @@ function onLevelCompletionCheckboxChanged(e, idx){
     // Update the corresponding flag image.
     const newValue = e.target.checked;
     flags[idx].style.display = newValue ? "block" : "none";
+}
+
+function onIsTutorialChanged(_){
+    const isEnabled = fieldIsTutorial.checked;
+
+    var offsetToUpdate = numBytesPerSlot * currentlySelectedSlot + levelCompletionTutorialByteOffset;
+
+    // We only want to flip the 3rd bit.
+    modifiedFileBytes[offsetToUpdate] = (modifiedFileBytes[offsetToUpdate] & 0x04) | (isEnabled << 2);
 }
 
 function onCapitalChanged(_) {
