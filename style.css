@@ -210,7 +210,7 @@ button, input::file-selector-button {
 /* Elements with a parchment-like border and colouring. */
 #header, .columns .left, #levelcompletion, .footnotes  {
     border: 24px solid black;
-    border-image: url('map-border.png');
+    border-image: url('images/map-border.png');
     border-image-slice: 8 8 8 8 fill;
     border-image-repeat: round;
     image-rendering: crisp-edges;

@@ -17,10 +17,10 @@ const numLevels = 34;
 const defaultFileBytes = Uint8Array.from(Array(lengthOfFile));
 
 const diggerStatImageUrls = [
-    "digger-stats-0.png",
-    "digger-stats-1.png",
-    "digger-stats-2.png",
-    "digger-stats-3.png"
+    "images/digger-stats-0.png",
+    "images/digger-stats-1.png",
+    "images/digger-stats-2.png",
+    "images/digger-stats-3.png"
 ]
 
 const flagOffsets = [
@@ -60,7 +60,7 @@ const slotNameInput = document.querySelector("#slotname");
 for(let i = 0; i < flagOffsets.length; i += 2){
     const theLeft = flagOffsets[i] - 10;
     const theTop = flagOffsets[i + 1] - 21;
-    imageContainer.innerHTML += "<img alt=\"\" class=\"flag\" src=\"flag.png\" style=\"left: " + theLeft + "px; top: " + theTop + "px;\">";
+    imageContainer.innerHTML += "<img alt=\"\" class=\"flag\" src=\"images/flag.png\" style=\"left: " + theLeft + "px; top: " + theTop + "px;\">";
 }
 const flags = imageContainer.querySelectorAll(".flag");
 

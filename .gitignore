@@ -1,8 +1,2 @@
 # IntelliJ Rider
 .idea/
-
-# Krita
-*.kra
-
-# Diggers save files
-*.DTA
