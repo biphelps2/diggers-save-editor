@@ -6,34 +6,47 @@
 </head>
 <body>
 
-    <div id="header">
+    <section id="header">
         <h1>Diggers Level Editor</h1>
-        <p>Choose a DIGGERS.DTA file to modify:</p>
+        <noscript>
+            <div style="margin-top: 10px; border: 3px dashed red; width: 500px; padding-left: 10px; padding-right: 10px; background: white;">
+                <p><strong>This tool depends heavily on JavaScript to run.</strong> Sorry for the inconvenience! If you've chosen to disable JavaScript, you can <a href="diggers.js">review the source here</a> before choosing to enable for this site.</p>
+                <p>In either case, the description of the file structure and other notes can be read below. Thanks for visiting!</p>
+            </div>
+            <style>
+                .upper-form {
+                    display: none;
+                }
+            </style>
+        </noscript>
+        <div class="upper-form">
+            <p>Choose a DIGGERS.DTA file to modify:</p>
 
-        <div class="action-buttons">
-            <input type="file" id="level-upload" />
-            <div class="other-actions">
-                <button id="download-file">Download changes</button>
-                <button id="reset-form">Reset form</button>
+            <div class="action-buttons">
+                <input type="file" id="level-upload" />
+                <div class="other-actions">
+                    <button id="download-file">Download changes</button>
+                    <button id="reset-form">Reset form</button>
+                    <button class="new-file">New file</button>
+                </div>
+            </div>
+
+            <div id="newfilesection">
+                <p>Or start with a new file:</p>
                 <button class="new-file">New file</button>
             </div>
         </div>
+    </section>
 
-        <div id="newfilesection">
-            <p>Or start with a new file:</p>
-            <button class="new-file">New file</button>
-        </div>
-    </div>
-
-    <div class="all-file-based-content">
+    <section class="all-file-based-content">
         <div class="tab">
             <button>Slot 1</button><button>Slot 2</button><button>Slot 3</button><button>Slot 4</button><button>Slot 5</button><button>Slot 6</button><button>Slot 7</button><button>Slot 8</button>
         </div>
 
-        <div class="tab-content">
+        <section class="tab-content">
             <form id="myform">
 
-                <div class="columns">
+                <section class="columns">
                     <div class="left">
                         <h2>Slot Name</h2>
                         <label>
@@ -88,9 +101,9 @@
                     <div class="right">
                         <img alt="The stats page for the currently selected digger, as shown in the actual game." id="digger-stats-img" src="images/digger-stats-0.png">
                     </div>
-                </div>
+                </section>
 
-                <div>
+                <section>
                     <fieldset id="levelcompletion">
                         <h2 id="heading-level-completion">Level Completion</h2>
                         <p>Choose which maps are marked as completed.</p>
@@ -105,9 +118,9 @@
                         <img alt="The Diggers level selection screen, in the style of a map. Each area in the map signifies a different level."
                              id="diggers-map" src="images/diggers-map-original-size.png" usemap="#image-map">
                     </div>
-                </div>
+                </section>
             </form>
-        </div>
+        </section>
 
         <!-- Populated via JavaScript. -->
         <div id="map-section"></div>
@@ -147,17 +160,17 @@
             <area target="" alt="33: Suhmner" title="33: Suhmner" data-idx="33" href="#" coords="585,177,595,159,597,133,582,108,573,105,565,110,530,104,512,94,504,98,509,111,518,115,505,158,498,159,490,172,545,165" shape="poly">
             <area target="" alt="34: ?" title="34: ?" data-idx="34" href="#" coords="584,72,598,68,600,49,585,28,562,30,554,45,570,65" shape="poly">
         </map>
-    </div>
+    </section>
 
     <div class="footer">
     </div>
 
     <hr>
 
-    <div class="footnotes" style="margin:auto; margin-bottom: calc(100vh - 50px); max-width: 800px;">
+    <section class="footnotes" style="margin:auto; margin-bottom: calc(100vh - 50px); max-width: 800px;">
         <h2>Notes</h2>
         <p>
-            This save file editor has been tested with version 1.94. Older versions are likely to
+            This save file editor has been tested with version 1.94 for MS-DOS. Other versions are likely to
             work but haven't been tested.
         </p>
         <p>
@@ -166,8 +179,12 @@
             surfacing everything for completion's sake.
         </p>
 
-        <img style="width: 100%; image-rendering: optimizeQuality;" src="images/diggers-format-diagram.png" alt="">
+        <p>
+            By splerp. <a target="_blank" href="https://github.com/biphelps2/diggers-save-editor">The source code can be found on GitHub here.</a> Enjoy!
+        </p>
 
+        <h3>File format details</h3>
+        <img style="width: 100%; image-rendering: optimizeQuality;" src="images/diggers-format-diagram.png" alt="">
         <p>
             The file size is fixed to 352 bytes exactly (since there are 8 save slots and no variable-length data).
             All 352 bytes set to 0 would be considered a valid empty save file.
@@ -194,10 +211,45 @@
             a save game feel "complete".
         </p>
 
-        <p>
-            By splerp. <a href="https://www.github.com">Source code can be found on GitHub here.</a> Enjoy!
-        </p>
-    </div>
+        <h3>Playing Diggers via DOSBox</h3>
+
+        <ol>
+        <li>Get DOSBox (<a target="_blank" href="https://www.dosbox.com/">https://www.dosbox.com/</a>)</li>
+        <li>Get a ROM of the game
+            <p>
+                Version 1.94 of this game added keyboard shortcuts, which are necessary to enjoy the game (in
+                my opinion). It can be difficult to find a ROM online which is v1.94 AND the soundtrack.
+            </p>
+            <p>If you're searching for a ROM, have a look at
+                <a target="_blank" href="https://web.archive.org/web/20231219023605/http://www.abandonia.com/vbullet/showthread.php?p=462312">this thread on abandonia.com</a>
+                and the comments on <a target="_blank" href="https://www.youtube.com/watch?v=w4a01IKWwQ8">this longplay on youtube</a>.
+                Always be careful with downloading untrusted files from the internet!
+            </p>
+        </li>
+            <li>Open DOSBox and run these commands:
+<pre style="white-space: pre-line;">
+<i class="comment">Get access to a directory on your computer</i>
+mount C /path/to/diggers/cue-and-bin
+
+<i class="comment">Mount the rom to a new drive D:</i>
+C:
+imgmount D /DIGGERS.CUE -t iso
+
+<i class="comment">Run the installer. Necessary for save games and music. Otherwise, can use just DIGGERS.EXE. In install window, set save location to somewhere like C:\DIGGERS</i>
+D:
+INSTALL.EXE
+
+<i class="comment">Return to the place where the game was installed and run DIGGERS.BAT.</i>
+C:
+cd DIGGERS
+DIGGERS.BAT</pre>
+            </li>
+        </ol>
+
+
+
+        <p></p>
+    </section>
 
 <script src="diggers.js"></script>
 </body>

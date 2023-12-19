@@ -33,8 +33,27 @@ fieldset {
 }
 
 hr {
-    border: 5px solid white;
+    border: 4px dashed white;
     margin: 50px;
+}
+
+i.comment {
+    margin-left: 15px;
+    position: relative;
+    display: inline-block;
+    opacity: 0.7;
+}
+
+i.comment::before {
+    content: "# ";
+    position: absolute;
+    left: -15px;
+}
+
+/* Icon after any external links. */
+a[target="_blank"]::after {
+    content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+    margin: 0 3px 0 5px;
 }
 
 /* Button styling, including for file upload embedded button. */
