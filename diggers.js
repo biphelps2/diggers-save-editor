@@ -126,7 +126,7 @@ function onChangeTab(n){
     }
     allTabs[n].classList.add("selected");
 
-    // Popualte form.
+    // Populate form.
     if(isEditingFile){
         const byteOffset = numBytesPerSlot * currentlySelectedSlot;
         const bytesForTab = modifiedFileBytes.slice(byteOffset, byteOffset + numBytesPerSlot);
@@ -142,7 +142,7 @@ function onChangeTab(n){
                 title += String.fromCharCode(titleBytes[i]);
             }
             else{
-                console.log("Non-alphanumeric character found, ending read here.");
+                // Non-alphanumeric character found, ending read here.
                 break;
             }
         }
@@ -159,7 +159,6 @@ function onChangeTab(n){
 
         document.querySelector("#slotname").value = title;
 
-        console.log ("bytes for tab: ", bytesForTab, modifiedFileBytes);
         let selectedRace = bytesForTab[raceSelectionOffset];
         if(selectedRace < 0){
             selectedRace = 0;
@@ -168,7 +167,6 @@ function onChangeTab(n){
             selectedRace = 3;
         }
 
-        console.log("Checkbox: " + selectedRace);
         minerCheckboxes[selectedRace].checked = true;
         SetMiner(selectedRace);
 
@@ -273,16 +271,13 @@ function onSlotNameChange(_) {
 
     const offsetToUpdate = currentlySelectedSlot * numBytesPerSlot;
 
-    console.log("Setting: " + name);
     // Reset to empty.
     for (let i = 0; i < lengthOfSaveName; i++) {
         modifiedFileBytes[offsetToUpdate + i] = '\0';
-        console.log("Resetting byte " + (offsetToUpdate + i));
     }
     // We do - 1 because we always need an end-of-string marker.
     for (let i = 0; i < lengthOfSaveName - 1 && i < fixed.length; i++) {
         modifiedFileBytes[offsetToUpdate + i] = fixed.charCodeAt(i);
-        console.log("Setting byte " + (offsetToUpdate + i) + " to" + fixed.charCodeAt(i));
     }
 }
 
